@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { fetchApi } from '../lib/api';
 import { useParams, useNavigate } from 'react-router-dom';
-import { CheckCircle2, Circle, PlayCircle, ArrowLeft, Clock, Activity, Loader2 } from 'lucide-react';
+import { CheckCircle2, Circle, PlayCircle, ArrowLeft, Clock, Activity, Loader2, AlertCircle, X } from 'lucide-react';
 import clsx from 'clsx';
 import { Course } from '../types/api';
-import { motion, type Variants } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -139,11 +139,30 @@ export const CourseDetail = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              {error && (
-                <div className="m-6 bg-red-50 text-red-600 p-4 rounded-lg text-sm font-medium border border-red-100">
-                  {error}
-                </div>
-              )}
+              <AnimatePresence>
+                {error && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                    animate={{ opacity: 1, height: 'auto', marginBottom: 24 }}
+                    exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                    className="mx-6 mt-6 overflow-hidden"
+                  >
+                    <div className="bg-red-50/80 backdrop-blur-sm border border-red-200 text-red-700 p-4 rounded-xl flex items-start gap-3 shadow-sm">
+                      <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-sm">Action Failed</h4>
+                        <p className="text-sm mt-1 text-red-600/90">{error}</p>
+                      </div>
+                      <button 
+                        onClick={() => setError(null)}
+                        className="p-1 hover:bg-red-100 rounded-md transition-colors text-red-500 hover:text-red-700"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <motion.div 
                 variants={containerVariants}
                 initial="hidden"

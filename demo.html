@@ -435,6 +435,54 @@ html, body {
   text-align: left;
 }
 
+/* Journey Toggle & Video Player Styles */
+.journey-toggle-group {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px;
+  border-radius: 30px;
+  gap: 4px;
+  margin-top: 8px;
+}
+.toggle-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.toggle-btn:hover {
+  color: #fff;
+}
+.toggle-btn.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+.video-container {
+  width: 100%;
+  max-width: 860px;
+  aspect-ratio: 16/10;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  background: #000;
+  display: none;
+}
+.video-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  outline: none;
+}
+
 /* ══════════════════════════════════════
    SLIDE 9 — SUMMARY
 ══════════════════════════════════════ */
@@ -743,6 +791,11 @@ kbd {
       <div class="flow-step"><div class="flow-step-icon">🏁</div>Complete</div>
     </div>
 
+    <div class="journey-toggle-group">
+      <button class="toggle-btn active" id="btn-mosaic">📸 Screenshots Mosaic</button>
+      <button class="toggle-btn" id="btn-video">🎥 Video Walkthrough</button>
+    </div>
+
     <div class="journey-mosaic">
       <div class="mosaic-item">
         <img src="docs/screenshots/1_login_page.png" alt="Login">
@@ -760,6 +813,10 @@ kbd {
         <img src="docs/screenshots/5_mentor_student_details.png" alt="Student Detail">
         <span class="mosaic-label">🔍 Student Inspector</span>
       </div>
+    </div>
+
+    <div class="video-container">
+      <video src="docs/screenshots/e2e_journey.mp4" controls loop muted playsinline></video>
     </div>
   </section>
 
@@ -848,6 +905,32 @@ kbd {
       else document.exitFullscreen();
     }
   });
+
+  // Journey flow toggle controls
+  const btnMosaic = document.getElementById('btn-mosaic');
+  const btnVideo = document.getElementById('btn-video');
+  const mosaicView = document.querySelector('.journey-mosaic');
+  const videoView = document.querySelector('.video-container');
+  const videoEl = videoView.querySelector('video');
+
+  if (btnMosaic && btnVideo && mosaicView && videoView && videoEl) {
+    btnMosaic.addEventListener('click', () => {
+      btnMosaic.classList.add('active');
+      btnVideo.classList.remove('active');
+      mosaicView.style.display = 'grid';
+      videoView.style.display = 'none';
+      videoEl.pause();
+    });
+
+    btnVideo.addEventListener('click', () => {
+      btnVideo.classList.add('active');
+      btnMosaic.classList.remove('active');
+      mosaicView.style.display = 'none';
+      videoView.style.display = 'block';
+      videoEl.currentTime = 0;
+      videoEl.play();
+    });
+  }
 
   // Touch swipe
   let tx = 0;
