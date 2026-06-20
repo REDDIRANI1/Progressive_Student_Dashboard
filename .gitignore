@@ -73,3 +73,5 @@ run_tests.sh
 take_screenshots.js
 run_screenshots.sh
 screenshot.mjs
+
+debug.js
