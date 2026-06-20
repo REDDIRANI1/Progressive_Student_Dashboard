@@ -25,8 +25,7 @@ Use a stack that is fast to build and easy to demo.
 ### Frontend
 
 - React.js with Vite
-- JavaScript for speed
-- TypeScript optional only if time allows
+- TypeScript for safer frontend data models and maintainable components
 - Tailwind CSS
 - shadcn/ui for clean UI components
 - Recharts for charts
@@ -501,21 +500,23 @@ student-dashboard/
   frontend/
     src/
       pages/
-        Login.jsx
-        Signup.jsx
-        StudentDashboard.jsx
-        CourseDetail.jsx
-        MentorDashboard.jsx
+        Login.tsx
+        Signup.tsx
+        StudentDashboard.tsx
+        CourseDetail.tsx
+        MentorDashboard.tsx
       components/
         charts/
         dashboard/
         layout/
         ui/
       lib/
-        api.js
-        auth.js
-      App.jsx
-      main.jsx
+        api.ts
+        auth.tsx
+      types/
+        api.ts
+      App.tsx
+      main.tsx
     package.json
 
   backend/

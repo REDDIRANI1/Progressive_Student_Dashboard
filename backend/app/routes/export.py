@@ -14,7 +14,8 @@ def export_progress_csv():
     claims = current_claims()
 
     if claims.get('role') == 'MENTOR':
-        student_ids = [user.id for user in User.query.filter_by(role='STUDENT').all()]
+        from app.models import MentorStudent
+        student_ids = [ms.student_id for ms in MentorStudent.query.filter_by(mentor_id=user_id).all()]
     else:
         student_ids = [user_id]
 

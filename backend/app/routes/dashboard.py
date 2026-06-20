@@ -52,20 +52,28 @@ def student_dashboard():
             "totalLessons": total_lessons
         })
 
-    # 5. Time Series (Last 7 days)
+    # 5. Time Series (Last 7 days) and Last Active
     now = datetime.utcnow()
+    last_active = None
     time_series = []
+    
+    # Get the most recent activity date
+    recent_activity = ActivityEvent.query.filter_by(student_id=student_id).order_by(ActivityEvent.created_at.desc()).first()
+    if recent_activity:
+        last_active = recent_activity.created_at.strftime('%Y-%m-%d')
+        
     for i in range(6, -1, -1):
         date = (now - timedelta(days=i)).date()
         start = datetime.combine(date, datetime.min.time())
         end = start + timedelta(days=1)
         minutes = db.session.query(func.sum(ActivityEvent.duration_minutes)).filter(
             ActivityEvent.student_id == student_id,
+            ActivityEvent.type == 'TIME_SPENT',
             ActivityEvent.created_at >= start,
             ActivityEvent.created_at < end
         ).scalar()
         time_series.append({
-            "date": date.strftime('%Y-%m-%d'),
+            "date": date.strftime('%b %d'),
             "minutes": int(minutes) if minutes else 0
         })
 
@@ -122,6 +130,7 @@ def student_dashboard():
         "completedLessons": completed_lessons,
         "totalTimeSpent": total_time_spent,
         "averageProgress": round(average_progress),
+        "lastActive": last_active,
         "courses": courses_data,
         "timeSeries": time_series,
         "completionDistribution": completion_distribution,
