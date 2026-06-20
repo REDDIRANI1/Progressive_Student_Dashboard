@@ -91,6 +91,7 @@ python3 seed.py
 [View API Documentation](docs/api.md)
 
 ## 10. Screenshots
+- [Login Page](docs/screenshots/login.png)
 - [Student Dashboard](docs/screenshots/student_dashboard.png)
 - [Course Details](docs/screenshots/course_details.png)
 - [Mentor Dashboard](docs/screenshots/mentor_dashboard.png)
