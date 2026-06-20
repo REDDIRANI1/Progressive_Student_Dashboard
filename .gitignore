@@ -67,3 +67,9 @@ commit-as-rrr.sh
 # Agent Instructions File
 agents.md
 AGENTS.md
+
+# Local verification/screenshot helper scripts
+run_tests.sh
+take_screenshots.js
+run_screenshots.sh
+screenshot.mjs
