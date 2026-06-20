@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { fetchApi } from '../lib/api';
 import { useParams } from 'react-router-dom';
 import { CheckCircle2, Circle, PlayCircle } from 'lucide-react';
@@ -11,6 +11,7 @@ export const CourseDetail = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [marking, setMarking] = useState<number | null>(null);
+  const startTimeRef = useRef<number>(Date.now());
 
   const loadCourse = useCallback(async () => {
     try {
@@ -30,9 +31,10 @@ export const CourseDetail = () => {
   const markComplete = async (lessonId: number) => {
     setMarking(lessonId);
     try {
+      const elapsedMinutes = Math.max(1, Math.floor((Date.now() - startTimeRef.current) / 60000));
       await fetchApi(`/lessons/${lessonId}/complete`, {
         method: 'POST',
-        body: JSON.stringify({ timeSpentMinutes: course?.lessons?.find(l => l.id === lessonId)?.estimatedMinutes || 0 })
+        body: JSON.stringify({ timeSpentMinutes: elapsedMinutes })
       });
       await loadCourse();
     } catch (err: any) {

@@ -35,19 +35,15 @@ def create_app():
     # Register blueprints
     from app.routes.auth import auth_bp
     from app.routes.dashboard import dashboard_bp
-    from app.routes.analytics import analytics_bp
     from app.routes.courses import courses_bp
     from app.routes.lessons import lessons_bp
-    from app.routes.activity import activity_bp
     from app.routes.mentor import mentor_bp
     from app.routes.export import export_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
-    app.register_blueprint(analytics_bp)
     app.register_blueprint(courses_bp)
     app.register_blueprint(lessons_bp)
-    app.register_blueprint(activity_bp)
     app.register_blueprint(mentor_bp)
     app.register_blueprint(export_bp)
     

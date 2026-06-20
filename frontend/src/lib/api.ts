@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://127.0.0.1:5001/api';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5001/api';
 
 export const fetchApi = async <T = any>(endpoint: string, options: RequestInit = {}): Promise<T> => {
   const token = localStorage.getItem('token');

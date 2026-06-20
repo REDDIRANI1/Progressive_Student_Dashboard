@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchApi } from '../lib/api';
+import { fetchApi, API_BASE_URL } from '../lib/api';
 import { Users, Clock, Target, AlertTriangle, Download } from 'lucide-react';
 import { MentorStudent, MentorStudentDetail } from '../types/api';
 
@@ -37,7 +37,7 @@ export const MentorDashboard = () => {
 
   const exportCsv = async () => {
     const token = localStorage.getItem('token');
-    const response = await fetch('http://127.0.0.1:5001/api/export/progress.csv', {
+    const response = await fetch(`${API_BASE_URL}/export/progress.csv`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const blob = await response.blob();
