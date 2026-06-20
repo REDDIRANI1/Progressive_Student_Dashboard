@@ -1,22 +1,31 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { fetchApi } from './api';
+import { User } from '../types/api';
 
-const AuthContext = createContext(null);
+interface AuthContextType {
+  user: User | null;
+  login: (email: string, password: string) => Promise<User>;
+  signup: (name: string, email: string, password: string, role: string) => Promise<void>;
+  logout: () => void;
+  loading: boolean;
+}
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(() => {
     const savedUser = localStorage.getItem('user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const data = await fetchApi('/auth/me');
+          const data = await fetchApi<User>('/auth/me');
           setUser(data);
           localStorage.setItem('user', JSON.stringify(data));
         } catch (error) {
@@ -41,8 +50,8 @@ export const AuthProvider = ({ children }) => {
     return () => window.removeEventListener('auth-change', handleAuthChange);
   }, []);
 
-  const login = async (email, password) => {
-    const data = await fetchApi('/auth/login', {
+  const login = async (email: string, password: string): Promise<User> => {
+    const data = await fetchApi<{ access_token: string, user: User }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
@@ -52,7 +61,7 @@ export const AuthProvider = ({ children }) => {
     return data.user;
   };
 
-  const signup = async (name, email, password, role) => {
+  const signup = async (name: string, email: string, password: string, role: string): Promise<void> => {
     await fetchApi('/auth/signup', {
       method: 'POST',
       body: JSON.stringify({ name, email, password, role }),
@@ -72,4 +81,10 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};

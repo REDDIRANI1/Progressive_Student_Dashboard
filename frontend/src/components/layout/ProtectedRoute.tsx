@@ -1,7 +1,9 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../lib/auth';
 
-export const ProtectedRoute = ({ children, allowedRole }) => {
+import { ReactNode } from 'react';
+
+export const ProtectedRoute = ({ children, allowedRole }: { children: ReactNode, allowedRole?: string }) => {
   const { user } = useAuth();
 
   if (!user) {

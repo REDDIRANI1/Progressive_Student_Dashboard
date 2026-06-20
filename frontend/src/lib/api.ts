@@ -1,11 +1,11 @@
 const API_BASE_URL = 'http://127.0.0.1:5001/api';
 
-export const fetchApi = async (endpoint, options = {}) => {
+export const fetchApi = async <T = any>(endpoint: string, options: RequestInit = {}): Promise<T> => {
   const token = localStorage.getItem('token');
   
-  const headers = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers,
+    ...(options.headers as Record<string, string>),
   };
 
   if (token) {

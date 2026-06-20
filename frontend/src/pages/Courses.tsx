@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { fetchApi } from '../lib/api';
 import { Link } from 'react-router-dom';
 import { BookOpen } from 'lucide-react';
+import { Course } from '../types/api';
 
 export const Courses = () => {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

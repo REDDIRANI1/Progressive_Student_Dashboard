@@ -4,12 +4,13 @@ import { fetchApi } from '../lib/api';
 import { useParams } from 'react-router-dom';
 import { CheckCircle2, Circle, PlayCircle } from 'lucide-react';
 import clsx from 'clsx';
+import { Course } from '../types/api';
 
 export const CourseDetail = () => {
-  const { id } = useParams();
-  const [course, setCourse] = useState(null);
+  const { id } = useParams<{ id: string }>();
+  const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
-  const [marking, setMarking] = useState(null);
+  const [marking, setMarking] = useState<number | null>(null);
 
   const loadCourse = useCallback(async () => {
     try {

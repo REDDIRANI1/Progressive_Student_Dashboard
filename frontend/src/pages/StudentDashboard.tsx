@@ -6,11 +6,12 @@ import {
   PieChart, Pie, Cell
 } from 'recharts';
 import { BookOpen, Clock, Target, CheckCircle } from 'lucide-react';
+import { StudentDashboardData } from '../types/api';
 
 const COLORS = ['#3b82f6', '#f59e0b', '#ef4444']; // Blue, Amber, Red for Donut chart
 
 export const StudentDashboard = () => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<StudentDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -75,8 +76,8 @@ export const StudentDashboard = () => {
             <BookOpen className="w-6 h-6 text-amber-600" />
           </div>
           <div>
-            <p className="text-sm font-medium text-slate-500">Active Courses</p>
-            <p className="text-2xl font-bold text-slate-800">{data.courses.length}</p>
+            <p className="text-sm font-medium text-slate-500">Last Active</p>
+            <p className="text-2xl font-bold text-slate-800">{data.lastActive ? data.lastActive : 'Today'}</p>
           </div>
         </div>
       </div>

@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { fetchApi } from '../lib/api';
 import { Users, Clock, Target, AlertTriangle, Download } from 'lucide-react';
+import { MentorStudent, MentorStudentDetail } from '../types/api';
 
 export const MentorDashboard = () => {
-  const [students, setStudents] = useState([]);
-  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [students, setStudents] = useState<MentorStudent[]>([]);
+  const [selectedStudent, setSelectedStudent] = useState<MentorStudentDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(false);
 
