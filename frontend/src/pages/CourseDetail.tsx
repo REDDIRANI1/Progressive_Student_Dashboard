@@ -28,6 +28,7 @@ export const CourseDetail = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [marking, setMarking] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const startTimeRef = useRef<number>(Date.now());
 
   const loadCourse = useCallback(async () => {
@@ -47,6 +48,7 @@ export const CourseDetail = () => {
 
   const markComplete = async (lessonId: number) => {
     setMarking(lessonId);
+    setError(null);
     try {
       const elapsedMinutes = Math.max(1, Math.floor((Date.now() - startTimeRef.current) / 60000));
       await fetchApi(`/lessons/${lessonId}/complete`, {
@@ -56,6 +58,7 @@ export const CourseDetail = () => {
       await loadCourse();
     } catch (err: any) {
       console.error(err);
+      setError(err.message || 'Failed to mark lesson complete');
     } finally {
       setMarking(null);
     }
@@ -136,6 +139,11 @@ export const CourseDetail = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
+              {error && (
+                <div className="m-6 bg-red-50 text-red-600 p-4 rounded-lg text-sm font-medium border border-red-100">
+                  {error}
+                </div>
+              )}
               <motion.div 
                 variants={containerVariants}
                 initial="hidden"

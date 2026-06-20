@@ -7,6 +7,9 @@ dist/
 build/
 frontend/dist/
 frontend/build/
+frontend/*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
 
 # Environment variables
 .env
