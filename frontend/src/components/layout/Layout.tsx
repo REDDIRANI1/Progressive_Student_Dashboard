@@ -1,27 +1,13 @@
-import { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../lib/auth';
-import { LogOut, BookOpen, LayoutDashboard, Users, Moon, Sun } from 'lucide-react';
+import { LogOut, BookOpen, LayoutDashboard, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 export const Layout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    if (document.documentElement.classList.contains('dark')) {
-      setIsDark(true);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle('dark');
-  };
 
   const handleLogout = () => {
     logout();
@@ -61,9 +47,6 @@ export const Layout = () => {
               Dashboard
             </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full w-9 h-9 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer">
-            {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}
-          </Button>
         </div>
         
         {/* Navigation Section */}
