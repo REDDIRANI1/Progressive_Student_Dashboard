@@ -10,7 +10,6 @@ export interface Lesson {
   title: string;
   order: number;
   status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
-  type: string;
   estimatedMinutes?: number;
 }
 

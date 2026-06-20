@@ -98,6 +98,8 @@ Gets recent activity events for the student.
 Manually logs an activity event.
 - **Headers**: `Authorization: Bearer <token>` (Role: STUDENT)
 - **Body**: `{ "type": "TIME_SPENT", "courseId": 1, "lessonId": 2, "durationMinutes": 20 }`
+  - Allowed types: `LESSON_STARTED`, `LESSON_COMPLETED`, `TIME_SPENT`
+  - `durationMinutes` must be non-negative.
 - **Response**: `201 Created` `{ "message": "Activity recorded" }`
 
 ---
