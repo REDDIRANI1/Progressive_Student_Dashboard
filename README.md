@@ -6,7 +6,7 @@ A comprehensive web application that tracks student progress across multiple cou
 ## 2. Tech Stack
 - **Frontend**: React.js, Vite, Tailwind CSS, Recharts, React Router
 - **Backend**: Python, FastAPI, SQLAlchemy, python-jose, passlib
-- **Database**: SQLite (for local demo)
+- **Database**: SQLite (default local demo) or PostgreSQL (for production)
 
 ## 3. Features
 - **Authentication**: JWT-based email/password login with Student and Mentor roles.
@@ -65,7 +65,14 @@ Check `.env.example` in the root and `backend/.env.example`.
 ```env
 SECRET_KEY=super-secret-key-for-dev-please-change-32chars
 JWT_SECRET_KEY=super-secret-jwt-key-for-dev-please-change-32chars
-DATABASE_URL=sqlite:///app.db
+
+# SQLite (Default Local Demo)
+# Leave DATABASE_URL empty or unset to use the local SQLite demo database by default.
+# DATABASE_URL=sqlite:///./app.db
+
+# PostgreSQL (Production/Deployment)
+# Set DATABASE_URL to your PostgreSQL connection string to use Postgres.
+# DATABASE_URL=postgresql+psycopg://username:password@localhost:5432/student_dashboard
 ```
 
 ## 6. Database Migration Commands
