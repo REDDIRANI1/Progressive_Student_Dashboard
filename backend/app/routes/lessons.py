@@ -37,6 +37,11 @@ def complete_lesson(lesson_id: int, data: CompleteLessonRequest = None, user_id:
     if not lesson:
         return JSONResponse(status_code=404, content={"detail": "Not Found"})
         
+    enrollment = db.query(Enrollment).filter(Enrollment.student_id == user_id, Enrollment.course_id == lesson.course_id).first()
+    if not enrollment:
+        return JSONResponse(status_code=403, content={"message": "Not enrolled in this course"})
+        
+        
     time_spent = lesson.estimated_minutes
     if data and data.timeSpentMinutes is not None:
         time_spent = data.timeSpentMinutes
@@ -75,11 +80,6 @@ def complete_lesson(lesson_id: int, data: CompleteLessonRequest = None, user_id:
         LessonProgress.status == 'COMPLETED'
     ).count()
     
-    enrollment = db.query(Enrollment).filter(Enrollment.student_id == user_id, Enrollment.course_id == lesson.course_id).first()
-    if not enrollment:
-        enrollment = Enrollment(student_id=user_id, course_id=lesson.course_id)
-        db.add(enrollment)
-        
     enrollment.progress_percent = int((completed / total_lessons) * 100) if total_lessons > 0 else 0
     
     db.commit()

@@ -21,6 +21,10 @@ class LoginRequest(BaseModel):
 @router.post("/signup", status_code=201)
 def signup(data: SignupRequest, db: Session = Depends(get_db)):
     data.email = data.email.lower()
+    
+    if len(data.password) < 8:
+        return JSONResponse(status_code=400, content={"message": "Password must be at least 8 characters long"})
+        
     if db.query(User).filter(User.email == data.email).first():
         return JSONResponse(status_code=409, content={"message": "User already exists"})
     
