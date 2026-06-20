@@ -5,7 +5,7 @@ A comprehensive web application that tracks student progress across multiple cou
 
 ## 2. Tech Stack
 - **Frontend**: React.js, Vite, Tailwind CSS, Recharts, React Router
-- **Backend**: Python, Flask, Flask-SQLAlchemy, Flask-JWT-Extended
+- **Backend**: Python, FastAPI, SQLAlchemy, python-jose, passlib
 - **Database**: SQLite (for local demo)
 
 ## 3. Features
@@ -39,9 +39,9 @@ A comprehensive web application that tracks student progress across multiple cou
    ```bash
    python3 seed.py
    ```
-6. Run the Flask server:
+6. Run the FastAPI server via uvicorn:
    ```bash
-   python3 run.py
+   uvicorn run:app --host 127.0.0.1 --port 5001 --reload
    ```
 
 ### Frontend Setup
@@ -63,21 +63,13 @@ Check `.env.example` in the root and `backend/.env.example`.
 
 **Backend (`backend/.env`)**:
 ```env
-FLASK_APP=run.py
-FLASK_ENV=development
 SECRET_KEY=super-secret-key-for-dev-please-change-32chars
 JWT_SECRET_KEY=super-secret-jwt-key-for-dev-please-change-32chars
 DATABASE_URL=sqlite:///app.db
 ```
 
 ## 6. Database Migration Commands
-The project currently uses `db.create_all()` in the seed script for rapid prototyping with SQLite. If Flask-Migrate is used later, you can run:
-```bash
-flask db init
-flask db migrate -m "Initial migration"
-flask db upgrade
-```
-
+The project currently uses `Base.metadata.create_all()` in the seed script for rapid prototyping with SQLite. If Alembic is used later, you can configure it for migrations.
 ## 7. Seed Command
 To generate the demo data, run from the `backend` folder:
 ```bash
