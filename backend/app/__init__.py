@@ -39,8 +39,6 @@ def create_app():
     from app.routes.lessons import lessons_bp
     from app.routes.mentor import mentor_bp
     from app.routes.export import export_bp
-    from app.routes.analytics import analytics_bp
-    from app.routes.activity import activity_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
@@ -48,8 +46,6 @@ def create_app():
     app.register_blueprint(lessons_bp)
     app.register_blueprint(mentor_bp)
     app.register_blueprint(export_bp)
-    app.register_blueprint(analytics_bp)
-    app.register_blueprint(activity_bp)
     
     @app.route('/api/health', methods=['GET'])
     def health_check():
