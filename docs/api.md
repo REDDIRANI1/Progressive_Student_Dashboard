@@ -61,27 +61,27 @@ Returns daily learning minutes for the last 14 days.
 
 ### `GET /courses`
 Lists all courses.
-- **Headers**: `Authorization: Bearer <token>`
+- **Headers**: `Authorization: Bearer <token>` (Role: STUDENT)
 - **Response**: `200 OK` `[{ "id": 1, "title": "Math", ... }]`
 
 ### `GET /courses/:id`
 Gets course details, lessons with progress status, and recent course activity history.
-- **Headers**: `Authorization: Bearer <token>`
+- **Headers**: `Authorization: Bearer <token>` (Role: STUDENT)
 - **Response**: `200 OK` `{ "id": 1, "title": "Math", "lessons": [...] }`
 
 ### `GET /courses/:id/progress`
 Gets the enrollment progress percentage for a specific course.
-- **Headers**: `Authorization: Bearer <token>`
+- **Headers**: `Authorization: Bearer <token>` (Role: STUDENT)
 - **Response**: `200 OK` `{ "courseId": 1, "progressPercent": 50 }`
 
 ### `GET /lessons/:id`
 Gets lesson details and current status.
-- **Headers**: `Authorization: Bearer <token>`
+- **Headers**: `Authorization: Bearer <token>` (Role: STUDENT)
 - **Response**: `200 OK` `{ "id": 1, "title": "Lesson 1", "status": "COMPLETED", ... }`
 
 ### `POST /lessons/:id/complete`
 Marks a lesson as complete, records time spent, and updates course progress.
-- **Headers**: `Authorization: Bearer <token>`
+- **Headers**: `Authorization: Bearer <token>` (Role: STUDENT)
 - **Body** (Optional): `{ "timeSpentMinutes": 30 }`
 - **Response**: `200 OK` `{ "message": "Lesson marked as complete", "progressPercent": 60 }`
 
@@ -91,12 +91,12 @@ Marks a lesson as complete, records time spent, and updates course progress.
 
 ### `GET /activity`
 Gets recent activity events for the student.
-- **Headers**: `Authorization: Bearer <token>`
+- **Headers**: `Authorization: Bearer <token>` (Role: STUDENT)
 - **Response**: `200 OK` `[{ "id": 1, "type": "LESSON_COMPLETED", "durationMinutes": 30, ... }]`
 
 ### `POST /activity`
 Manually logs an activity event.
-- **Headers**: `Authorization: Bearer <token>`
+- **Headers**: `Authorization: Bearer <token>` (Role: STUDENT)
 - **Body**: `{ "type": "TIME_SPENT", "courseId": 1, "lessonId": 2, "durationMinutes": 20 }`
 - **Response**: `201 Created` `{ "message": "Activity recorded" }`
 

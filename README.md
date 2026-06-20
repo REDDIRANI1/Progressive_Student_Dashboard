@@ -5,7 +5,7 @@ A comprehensive web application that tracks student progress across multiple cou
 
 ## 2. Tech Stack
 - **Frontend**: React.js, Vite, Tailwind CSS, Recharts, React Router
-- **Backend**: Python, FastAPI, SQLAlchemy, python-jose, passlib
+- **Backend**: Python, FastAPI, SQLAlchemy, python-jose, bcrypt
 - **Database**: SQLite (default local demo) or PostgreSQL (for production)
 
 ## 3. Features
@@ -31,9 +31,9 @@ A comprehensive web application that tracks student progress across multiple cou
    ```bash
    pip install -r requirements.txt
    ```
-4. Copy the environment variables template:
+4. Copy the environment variables template from the repository root:
    ```bash
-   cp .env.example .env
+   cp ../.env.example .env
    ```
 5. Seed the database (creates tables and demo data):
    ```bash
@@ -59,7 +59,7 @@ A comprehensive web application that tracks student progress across multiple cou
    ```
 
 ## 5. Environment Variables
-Check `.env.example` in the root and `backend/.env.example`.
+Check `.env.example` in the repository root.
 
 **Backend (`backend/.env`)**:
 ```env

@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Lesson, LessonProgress, ActivityEvent, Enrollment
-from app.utils import current_user_id
+from app.utils import current_user_id, require_role
 from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
@@ -14,7 +14,7 @@ class CompleteLessonRequest(BaseModel):
     timeSpentMinutes: Optional[int] = None
 
 @router.get("/{lesson_id}")
-def get_lesson(lesson_id: int, user_id: int = Depends(current_user_id), db: Session = Depends(get_db)):
+def get_lesson(lesson_id: int, user_id: int = Depends(current_user_id), claims: dict = Depends(require_role("STUDENT")), db: Session = Depends(get_db)):
     lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
     if not lesson:
         return JSONResponse(status_code=404, content={"detail": "Not Found"})
@@ -32,7 +32,7 @@ def get_lesson(lesson_id: int, user_id: int = Depends(current_user_id), db: Sess
     }
 
 @router.post("/{lesson_id}/complete")
-def complete_lesson(lesson_id: int, data: CompleteLessonRequest = None, user_id: int = Depends(current_user_id), db: Session = Depends(get_db)):
+def complete_lesson(lesson_id: int, data: CompleteLessonRequest = None, user_id: int = Depends(current_user_id), claims: dict = Depends(require_role("STUDENT")), db: Session = Depends(get_db)):
     lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
     if not lesson:
         return JSONResponse(status_code=404, content={"detail": "Not Found"})
@@ -40,6 +40,8 @@ def complete_lesson(lesson_id: int, data: CompleteLessonRequest = None, user_id:
     time_spent = lesson.estimated_minutes
     if data and data.timeSpentMinutes is not None:
         time_spent = data.timeSpentMinutes
+    if time_spent < 0:
+        return JSONResponse(status_code=400, content={"message": "timeSpentMinutes must be non-negative"})
         
     progress = db.query(LessonProgress).filter(LessonProgress.student_id == user_id, LessonProgress.lesson_id == lesson.id).first()
     if not progress:
