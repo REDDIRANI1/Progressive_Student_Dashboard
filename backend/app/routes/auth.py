@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from app.database import get_db
-from app.models import User
+from app.models import User, Course, Enrollment
 from app.utils import get_password_hash, verify_password, create_access_token, current_user_id
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -39,6 +39,14 @@ def signup(data: SignupRequest, db: Session = Depends(get_db)):
     )
     db.add(user)
     db.commit()
+    db.refresh(user)
+    
+    if user.role == 'STUDENT':
+        courses = db.query(Course).all()
+        for course in courses:
+            db.add(Enrollment(student_id=user.id, course_id=course.id, progress_percent=0))
+        db.commit()
+
     return {"message": "User created successfully"}
 
 @router.post("/login")
