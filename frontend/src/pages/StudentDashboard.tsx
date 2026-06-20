@@ -7,14 +7,14 @@ import {
 } from 'recharts';
 import { BookOpen, Clock, Target, CheckCircle, Play, ArrowRight, Activity, Zap } from 'lucide-react';
 import { StudentDashboardData } from '../types/api';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 
 const COLORS = ['#3b82f6', '#f59e0b', '#ef4444']; // Blue, Amber, Red
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -22,7 +22,7 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
 };
@@ -184,7 +184,7 @@ export const StudentDashboard = () => {
                         </Link>
                         <span className="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">{course.progressPercent}%</span>
                       </div>
-                      <Progress value={course.progressPercent} className="h-3 bg-slate-100 [&>div]:bg-gradient-to-r [&>div]:from-blue-500 [&>div]:to-indigo-500" />
+                      <Progress value={course.progressPercent ?? 0} className="h-3 bg-slate-100 [&>div]:bg-gradient-to-r [&>div]:from-blue-500 [&>div]:to-indigo-500" />
                       <div className="flex justify-between items-center mt-3 text-sm text-slate-500">
                         <span>{course.completedLessons} of {course.totalLessons} lessons completed</span>
                         <Button 

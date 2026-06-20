@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../lib/auth';
-import { LogOut, BookOpen, LayoutDashboard, Users, Moon, Sun, ChevronRight } from 'lucide-react';
+import { LogOut, BookOpen, LayoutDashboard, Users, Moon, Sun } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';

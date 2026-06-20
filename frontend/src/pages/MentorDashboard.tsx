@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { fetchApi, API_BASE_URL } from '../lib/api';
-import { Users, Clock, Target, AlertTriangle, Download, ChevronRight, CheckCircle2, PlayCircle, XCircle } from 'lucide-react';
+import { Users, Target, AlertTriangle, Download, ChevronRight, CheckCircle2, PlayCircle, XCircle } from 'lucide-react';
 import { MentorStudent, MentorStudentDetail } from '../types/api';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '../components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
-import { motion } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Table, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
+import { motion, type Variants } from 'framer-motion';
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -18,7 +18,7 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
 };
