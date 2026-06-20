@@ -1,7 +1,13 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { BookOpen } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export const Login = () => {
   const [email, setEmail] = useState('');
@@ -40,81 +46,89 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="sm:mx-auto sm:w-full sm:max-w-md"
+      >
+        <div className="flex justify-center mb-6">
           <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
             <BookOpen className="w-7 h-7 text-white" />
           </div>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900 tracking-tight">
-          Welcome back
-        </h2>
-        <p className="mt-2 text-center text-sm text-slate-600">
-          Sign in to continue your learning journey
-        </p>
-      </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-2xl sm:px-10 border border-slate-100">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm font-medium">
-                {error}
-              </div>
-            )}
-            <div>
-              <label className="block text-sm font-medium text-slate-700">Email address</label>
-              <div className="mt-1">
-                <input
+        <Card className="bg-white/80 backdrop-blur-xl dark:bg-slate-950/80 shadow-2xl border-white/20 dark:border-slate-800/50">
+          <CardHeader>
+            <CardTitle className="text-center text-3xl font-extrabold tracking-tight">
+              Welcome back
+            </CardTitle>
+            <CardDescription className="text-center">
+              Sign in to continue your learning journey
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              {error && (
+                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm font-medium border border-red-100">
+                  {error}
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="email">Email address</Label>
+                <Input
+                  id="email"
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-4 py-3 border border-slate-300 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="you@example.com"
+                  className="bg-white/50 dark:bg-slate-900/50"
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700">Password</label>
-              <div className="mt-1">
-                <input
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-4 py-3 border border-slate-300 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   placeholder="••••••••"
+                  className="bg-white/50 dark:bg-slate-900/50"
                 />
               </div>
-            </div>
 
-            <div>
-              <button
+              <Button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
+                className="w-full"
               >
                 {loading ? 'Signing in...' : 'Sign in'}
-              </button>
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4 border-t border-slate-200/50 dark:border-slate-800/50 pt-6 mt-2">
+            <p className="text-sm text-slate-600 dark:text-slate-400 text-center w-full">Demo Accounts</p>
+            <div className="grid grid-cols-2 gap-3 w-full">
+              <Button variant="outline" onClick={handleDemoStudent} className="w-full text-xs bg-white/50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800">
+                Demo Student
+              </Button>
+              <Button variant="outline" onClick={handleDemoMentor} className="w-full text-xs bg-white/50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800">
+                Demo Mentor
+              </Button>
             </div>
-          </form>
-          
-          <div className="mt-6 pt-6 border-t border-slate-200">
-            <p className="text-sm text-slate-600 mb-4 text-center">Demo Accounts</p>
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={handleDemoStudent} type="button" className="text-xs py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors">
-                Fill Demo Student
-              </button>
-              <button onClick={handleDemoMentor} type="button" className="text-xs py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors">
-                Fill Demo Mentor
-              </button>
+            <div className="text-center text-sm w-full mt-4">
+              <span className="text-slate-600 dark:text-slate-400">Don't have an account? </span>
+              <Link to="/signup" className="font-semibold text-blue-600 hover:text-blue-500">
+                Sign up
+              </Link>
             </div>
-          </div>
-        </div>
-      </div>
+          </CardFooter>
+        </Card>
+      </motion.div>
     </div>
   );
 };

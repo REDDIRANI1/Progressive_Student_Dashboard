@@ -2,6 +2,12 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { BookOpen } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export const Signup = () => {
   const [name, setName] = useState('');
@@ -33,99 +39,108 @@ export const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="sm:mx-auto sm:w-full sm:max-w-md"
+      >
+        <div className="flex justify-center mb-6">
           <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
             <BookOpen className="w-7 h-7 text-white" />
           </div>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900 tracking-tight">
-          Create an account
-        </h2>
-      </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-2xl sm:px-10 border border-slate-100">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm font-medium">
-                {error}
-              </div>
-            )}
-            
-            <div>
-              <label className="block text-sm font-medium text-slate-700">Full Name</label>
-              <div className="mt-1">
-                <input
+        <Card className="bg-white/80 backdrop-blur-xl dark:bg-slate-950/80 shadow-2xl border-white/20 dark:border-slate-800/50">
+          <CardHeader>
+            <CardTitle className="text-center text-3xl font-extrabold tracking-tight">
+              Create an account
+            </CardTitle>
+            <CardDescription className="text-center">
+              Join us to start your learning journey
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              {error && (
+                <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm font-medium border border-red-100">
+                  {error}
+                </div>
+              )}
+              
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="appearance-none block w-full px-4 py-3 border border-slate-300 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  placeholder="John Doe"
+                  className="bg-white/50 dark:bg-slate-900/50"
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700">Email address</label>
-              <div className="mt-1">
-                <input
+              <div className="space-y-2">
+                <Label htmlFor="email">Email address</Label>
+                <Input
+                  id="email"
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-4 py-3 border border-slate-300 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  placeholder="you@example.com"
+                  className="bg-white/50 dark:bg-slate-900/50"
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700">Password</label>
-              <div className="mt-1">
-                <input
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-4 py-3 border border-slate-300 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  placeholder="••••••••"
+                  className="bg-white/50 dark:bg-slate-900/50"
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700">Role</label>
-              <div className="mt-1">
+              <div className="space-y-2">
+                <Label htmlFor="role">Role</Label>
                 <select
+                  id="role"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="block w-full px-4 py-3 border border-slate-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="flex h-9 w-full rounded-md border border-slate-200 bg-white/50 dark:bg-slate-900/50 px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:focus-visible:ring-slate-300"
                 >
                   <option value="STUDENT">Student</option>
                   <option value="MENTOR">Mentor</option>
                 </select>
               </div>
-            </div>
 
-            <div>
-              <button
+              <Button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
+                className="w-full"
               >
                 {loading ? 'Creating account...' : 'Sign up'}
-              </button>
-            </div>
-          </form>
+              </Button>
+            </form>
+          </CardContent>
           
-          <div className="mt-6 text-center text-sm">
-            <span className="text-slate-600">Already have an account? </span>
-            <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-500">
-              Sign in
-            </Link>
-          </div>
-        </div>
-      </div>
+          <CardFooter className="flex flex-col space-y-4 border-t border-slate-200/50 dark:border-slate-800/50 pt-6 mt-2">
+            <div className="text-center text-sm w-full">
+              <span className="text-slate-600 dark:text-slate-400">Already have an account? </span>
+              <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-500">
+                Sign in
+              </Link>
+            </div>
+          </CardFooter>
+        </Card>
+      </motion.div>
     </div>
   );
 };
