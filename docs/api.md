@@ -1,0 +1,101 @@
+# API Documentation
+
+## Base URL
+`/api`
+
+## Authentication
+Protected routes require a `Bearer <token>` in the Authorization header.
+
+### `POST /auth/signup`
+Creates a new user.
+- **Body**: `{ "name": "John", "email": "john@example.com", "password": "pass", "role": "STUDENT" }`
+- **Response**: `201 Created`
+
+### `POST /auth/login`
+Authenticates a user and returns a JWT token.
+- **Body**: `{ "email": "john@example.com", "password": "pass" }`
+- **Response**: `200 OK` `{ "access_token": "...", "user": { ... } }`
+
+### `GET /auth/me`
+Gets the current logged-in user.
+- **Headers**: `Authorization: Bearer <token>`
+- **Response**: `200 OK` `{ "id": 1, "name": "John", ... }`
+
+---
+
+## Dashboard
+
+### `GET /dashboard/student`
+Gets the student dashboard stats, charts data, and recommendations.
+- **Headers**: `Authorization: Bearer <token>` (Role: STUDENT)
+- **Response**: `200 OK`
+```json
+{
+  "completedLessons": 18,
+  "totalTimeSpent": 420,
+  "averageProgress": 64,
+  "courses": [ ... ],
+  "timeSeries": [ ... ],
+  "completionDistribution": [ ... ],
+  "recommendations": [ ... ]
+}
+```
+
+---
+
+## Courses & Lessons
+
+### `GET /courses`
+Lists all courses.
+- **Headers**: `Authorization: Bearer <token>`
+- **Response**: `200 OK` `[{ "id": 1, "title": "Math", ... }]`
+
+### `GET /courses/:id`
+Gets course details and its lessons with progress status.
+- **Headers**: `Authorization: Bearer <token>`
+- **Response**: `200 OK` `{ "id": 1, "title": "Math", "lessons": [...] }`
+
+### `GET /courses/:id/progress`
+Gets the enrollment progress percentage for a specific course.
+- **Headers**: `Authorization: Bearer <token>`
+- **Response**: `200 OK` `{ "courseId": 1, "progressPercent": 50 }`
+
+### `GET /lessons/:id`
+Gets lesson details and current status.
+- **Headers**: `Authorization: Bearer <token>`
+- **Response**: `200 OK` `{ "id": 1, "title": "Lesson 1", "status": "COMPLETED", ... }`
+
+### `POST /lessons/:id/complete`
+Marks a lesson as complete, records time spent, and updates course progress.
+- **Headers**: `Authorization: Bearer <token>`
+- **Body** (Optional): `{ "timeSpentMinutes": 30 }`
+- **Response**: `200 OK` `{ "message": "Lesson marked as complete", "progressPercent": 60 }`
+
+---
+
+## Activity
+
+### `GET /activity`
+Gets recent activity events for the student.
+- **Headers**: `Authorization: Bearer <token>`
+- **Response**: `200 OK` `[{ "id": 1, "type": "LESSON_COMPLETED", "durationMinutes": 30, ... }]`
+
+### `POST /activity`
+Manually logs an activity event.
+- **Headers**: `Authorization: Bearer <token>`
+- **Body**: `{ "type": "TIME_SPENT", "courseId": 1, "lessonId": 2, "durationMinutes": 20 }`
+- **Response**: `201 Created` `{ "message": "Activity recorded" }`
+
+---
+
+## Mentor
+
+### `GET /mentor/students`
+Gets all students assigned to the mentor and their aggregate progress.
+- **Headers**: `Authorization: Bearer <token>` (Role: MENTOR)
+- **Response**: `200 OK` `[{ "id": 2, "name": "Demo Student", "overallProgress": 60, "totalTimeSpent": 500, "coursesNeedingAttention": [...] }]`
+
+### `GET /mentor/students/:studentId/dashboard`
+Gets a specific student's dashboard stats.
+- **Headers**: `Authorization: Bearer <token>` (Role: MENTOR)
+- **Response**: `200 OK` `{ "completedLessons": 18, ... }`
