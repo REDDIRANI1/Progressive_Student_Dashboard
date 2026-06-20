@@ -8,14 +8,16 @@ Protected routes require a `Bearer <token>` in the Authorization header.
 
 ### `POST /auth/signup`
 Creates a new user.
-- **Validation**: Passwords must be at least 8 characters long (returns `400 Bad Request` otherwise).
-- **Side Effects**: Automatically enrolls newly created `STUDENT` accounts in all available courses with 0% progress.
+- **Validation**: Passwords must be at least 8 characters long. Role must be `STUDENT` or `MENTOR`.
+- **Email Handling**: Email is trimmed and stored lowercase.
+- **Side Effects**: Newly created `STUDENT` accounts are automatically enrolled in all available courses with 0% progress.
 - **Body**: `{ "name": "John", "email": "john@example.com", "password": "password123", "role": "STUDENT" }`
-- **Response**: `201 Created`
+- **Response**: `201 Created` `{ "message": "User created successfully" }`
 
 ### `POST /auth/login`
 Authenticates a user and returns a JWT token.
-- **Body**: `{ "email": "john@example.com", "password": "pass" }`
+- **Email Handling**: Email is trimmed and matched lowercase.
+- **Body**: `{ "email": "student@example.com", "password": "password123" }`
 - **Response**: `200 OK` `{ "access_token": "...", "user": { ... } }`
 
 ### `GET /auth/me`
@@ -85,7 +87,9 @@ Gets lesson details and current status.
 Marks a lesson as complete, records time spent, and updates course progress.
 - **Headers**: `Authorization: Bearer <token>` (Role: STUDENT)
 - **Body** (Optional): `{ "timeSpentMinutes": 30 }`
+  - `timeSpentMinutes` must be non-negative.
 - **Response**: `200 OK` `{ "message": "Lesson marked as complete", "progressPercent": 60 }`
+- **Error**: `403 Forbidden` if the student is not enrolled in the lesson's course.
 
 ---
 
@@ -103,6 +107,9 @@ Manually logs an activity event.
   - Allowed types: `LESSON_STARTED`, `LESSON_COMPLETED`, `TIME_SPENT`
   - `durationMinutes` must be non-negative.
 - **Response**: `201 Created` `{ "message": "Activity recorded" }`
+- **Errors**:
+  - `400 Bad Request` `{ "message": "Invalid activity type" }`
+  - `400 Bad Request` `{ "message": "durationMinutes must be non-negative" }`
 
 ---
 
