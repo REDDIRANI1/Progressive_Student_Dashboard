@@ -20,7 +20,7 @@ class LoginRequest(BaseModel):
 
 @router.post("/signup", status_code=201)
 def signup(data: SignupRequest, db: Session = Depends(get_db)):
-    data.email = data.email.lower()
+    data.email = data.email.strip().lower()
     
     if len(data.password) < 8:
         return JSONResponse(status_code=400, content={"message": "Password must be at least 8 characters long"})
@@ -43,7 +43,7 @@ def signup(data: SignupRequest, db: Session = Depends(get_db)):
 
 @router.post("/login")
 def login(data: LoginRequest, db: Session = Depends(get_db)):
-    data.email = data.email.lower()
+    data.email = data.email.strip().lower()
     user = db.query(User).filter(User.email == data.email).first()
     if not user or not verify_password(data.password, user.password_hash):
         return JSONResponse(status_code=401, content={"message": "Invalid credentials"})

@@ -32,6 +32,12 @@ def post_activity(data: ActivityRequest, user_id: int = Depends(current_user_id)
     if not data.type:
         return JSONResponse(status_code=400, content={"message": "Missing event type"})
 
+    if data.type not in ['LESSON_STARTED', 'LESSON_COMPLETED', 'TIME_SPENT']:
+        return JSONResponse(status_code=400, content={"message": "Invalid activity type"})
+
+    if data.durationMinutes is not None and data.durationMinutes < 0:
+        return JSONResponse(status_code=400, content={"message": "durationMinutes must be non-negative"})
+
     event = ActivityEvent(
         student_id=user_id,
         course_id=data.courseId,
