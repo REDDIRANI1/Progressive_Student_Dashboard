@@ -39,8 +39,8 @@ Use a stack that is fast to build and easy to demo.
 
 ### Database
 
-- PostgreSQL using Supabase or Neon
-- SQLite for local demo if time is short
+- SQLite (default local demo)
+- PostgreSQL using Supabase or Neon (for production)
 
 ### ORM
 
