@@ -20,6 +20,7 @@ class LoginRequest(BaseModel):
 
 @router.post("/signup", status_code=201)
 def signup(data: SignupRequest, db: Session = Depends(get_db)):
+    data.email = data.email.lower()
     if db.query(User).filter(User.email == data.email).first():
         return JSONResponse(status_code=409, content={"message": "User already exists"})
     
@@ -38,6 +39,7 @@ def signup(data: SignupRequest, db: Session = Depends(get_db)):
 
 @router.post("/login")
 def login(data: LoginRequest, db: Session = Depends(get_db)):
+    data.email = data.email.lower()
     user = db.query(User).filter(User.email == data.email).first()
     if not user or not verify_password(data.password, user.password_hash):
         return JSONResponse(status_code=401, content={"message": "Invalid credentials"})
