@@ -1,44 +1,45 @@
-from flask import Blueprint, jsonify, request
-from flask_jwt_extended import jwt_required
-from app import db
+from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
+from app.database import get_db
 from app.models import ActivityEvent
-from app.utils import current_user_id, role_required
+from app.utils import current_user_id, require_role
+from pydantic import BaseModel
+from typing import Optional
 
-activity_bp = Blueprint('activity', __name__, url_prefix='/api/activity')
+router = APIRouter(prefix="/api/activity", tags=["activity"])
 
-@activity_bp.route('', methods=['GET'])
-@jwt_required()
-@role_required('STUDENT')
-def get_activity():
-    student_id = current_user_id()
-    events = ActivityEvent.query.filter_by(student_id=student_id).order_by(ActivityEvent.created_at.desc()).limit(50).all()
-    return jsonify([{
+class ActivityRequest(BaseModel):
+    courseId: Optional[int] = None
+    lessonId: Optional[int] = None
+    type: str
+    durationMinutes: Optional[int] = 0
+
+@router.get("")
+def get_activity(user_id: int = Depends(current_user_id), claims: dict = Depends(require_role("STUDENT")), db: Session = Depends(get_db)):
+    events = db.query(ActivityEvent).filter(ActivityEvent.student_id == user_id).order_by(ActivityEvent.created_at.desc()).limit(50).all()
+    return [{
         "id": event.id,
         "courseId": event.course_id,
         "lessonId": event.lesson_id,
         "type": event.type,
         "durationMinutes": event.duration_minutes,
         "createdAt": event.created_at.isoformat()
-    } for event in events]), 200
+    } for event in events]
 
-@activity_bp.route('', methods=['POST'])
-@jwt_required()
-@role_required('STUDENT')
-def post_activity():
-    student_id = current_user_id()
-    data = request.get_json()
-
-    if not data or not data.get('type'):
-        return jsonify({"message": "Missing event type"}), 400
+@router.post("", status_code=201)
+def post_activity(data: ActivityRequest, user_id: int = Depends(current_user_id), claims: dict = Depends(require_role("STUDENT")), db: Session = Depends(get_db)):
+    if not data.type:
+        return JSONResponse(status_code=400, content={"message": "Missing event type"})
 
     event = ActivityEvent(
-        student_id=student_id,
-        course_id=data.get('courseId'),
-        lesson_id=data.get('lessonId'),
-        type=data['type'],
-        duration_minutes=data.get('durationMinutes', 0)
+        student_id=user_id,
+        course_id=data.courseId,
+        lesson_id=data.lessonId,
+        type=data.type,
+        duration_minutes=data.durationMinutes or 0
     )
-    db.session.add(event)
-    db.session.commit()
+    db.add(event)
+    db.commit()
 
-    return jsonify({"message": "Activity recorded"}), 201
+    return {"message": "Activity recorded"}

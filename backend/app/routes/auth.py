@@ -1,52 +1,59 @@
-from flask import Blueprint, request, jsonify
-from app import db
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
+from pydantic import BaseModel
+from app.database import get_db
 from app.models import User
-from flask_jwt_extended import create_access_token, jwt_required
-from app.utils import current_user_id
+from app.utils import get_password_hash, verify_password, create_access_token, current_user_id
 
-auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
+router = APIRouter(prefix="/api/auth", tags=["auth"])
 
-@auth_bp.route('/signup', methods=['POST'])
-def signup():
-    data = request.get_json()
-    if not data or not data.get('email') or not data.get('password') or not data.get('name'):
-        return jsonify({"message": "Missing required fields"}), 400
-        
-    if User.query.filter_by(email=data['email']).first():
-        return jsonify({"message": "User already exists"}), 409
-        
-    role = data.get('role', 'STUDENT')
-    if role not in ['STUDENT', 'MENTOR']:
-        return jsonify({"message": "Invalid role"}), 400
-        
-    user = User(name=data['name'], email=data['email'], role=role)
-    user.set_password(data['password'])
-    db.session.add(user)
-    db.session.commit()
+class SignupRequest(BaseModel):
+    name: str
+    email: str
+    password: str
+    role: str = "STUDENT"
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+@router.post("/signup", status_code=201)
+def signup(data: SignupRequest, db: Session = Depends(get_db)):
+    if db.query(User).filter(User.email == data.email).first():
+        return JSONResponse(status_code=409, content={"message": "User already exists"})
     
-    return jsonify({"message": "User created successfully"}), 201
-
-@auth_bp.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    if not data or not data.get('email') or not data.get('password'):
-        return jsonify({"message": "Missing email or password"}), 400
+    if data.role not in ['STUDENT', 'MENTOR']:
+        return JSONResponse(status_code=400, content={"message": "Invalid role"})
         
-    user = User.query.filter_by(email=data['email']).first()
-    if not user or not user.check_password(data['password']):
-        return jsonify({"message": "Invalid credentials"}), 401
+    user = User(
+        name=data.name, 
+        email=data.email, 
+        role=data.role,
+        password_hash=get_password_hash(data.password)
+    )
+    db.add(user)
+    db.commit()
+    return {"message": "User created successfully"}
+
+@router.post("/login")
+def login(data: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == data.email).first()
+    if not user or not verify_password(data.password, user.password_hash):
+        return JSONResponse(status_code=401, content={"message": "Invalid credentials"})
         
     access_token = create_access_token(
-        identity=str(user.id),
-        additional_claims={"role": user.role, "name": user.name}
+        data={"identity": str(user.id), "role": user.role, "name": user.name}
     )
-    return jsonify({"access_token": access_token, "user": {"id": user.id, "email": user.email, "role": user.role, "name": user.name}}), 200
+    return {
+        "access_token": access_token, 
+        "user": {"id": user.id, "email": user.email, "role": user.role, "name": user.name}
+    }
 
-@auth_bp.route('/me', methods=['GET'])
-@jwt_required()
-def me():
-    user = User.query.get(current_user_id())
+@router.get("/me")
+def me(user_id: int = Depends(current_user_id), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        return jsonify({"message": "User not found"}), 404
+        return JSONResponse(status_code=404, content={"message": "User not found"})
         
-    return jsonify({"id": user.id, "name": user.name, "email": user.email, "role": user.role}), 200
+    return {"id": user.id, "name": user.name, "email": user.email, "role": user.role}

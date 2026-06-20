@@ -1,29 +1,34 @@
-from flask import Blueprint, jsonify
-from flask_jwt_extended import jwt_required
+from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
 from sqlalchemy import func
-from app import db
+from app.database import get_db
 from app.models import User, MentorStudent, Enrollment, LessonProgress, Course, Lesson, ActivityEvent
-from app.utils import current_user_id, role_required
+from app.utils import current_user_id, require_role
 
-mentor_bp = Blueprint('mentor', __name__, url_prefix='/api/mentor')
+router = APIRouter(prefix="/api/mentor", tags=["mentor"])
 
-@mentor_bp.route('/students', methods=['GET'])
-@jwt_required()
-@role_required('MENTOR')
-def get_students():
-    mentor_id = current_user_id()
-    mentor_students = MentorStudent.query.filter_by(mentor_id=mentor_id).all()
+@router.get("/students")
+def get_students(user_id: int = Depends(current_user_id), claims: dict = Depends(require_role("MENTOR")), db: Session = Depends(get_db)):
+    mentor_students = db.query(MentorStudent).filter(MentorStudent.mentor_id == user_id).all()
     
     result = []
     for ms in mentor_students:
-        student = User.query.get(ms.student_id)
+        student = db.query(User).filter(User.id == ms.student_id).first()
         if not student:
             continue
-        enrollments = Enrollment.query.filter_by(student_id=student.id).all()
+        enrollments = db.query(Enrollment).filter(Enrollment.student_id == student.id).all()
         avg_progress = sum(e.progress_percent for e in enrollments) / len(enrollments) if enrollments else 0
-        total_time_result = db.session.query(func.sum(LessonProgress.time_spent_minutes)).filter_by(student_id=student.id).scalar()
+        total_time_result = db.query(func.sum(LessonProgress.time_spent_minutes)).filter(LessonProgress.student_id == student.id).scalar()
         total_time_spent = int(total_time_result) if total_time_result else 0
-        needs_attention = [Course.query.get(e.course_id).title for e in enrollments if e.progress_percent < 30 and Course.query.get(e.course_id)]
+        
+        needs_attention = []
+        for e in enrollments:
+            if e.progress_percent < 30:
+                course = db.query(Course).filter(Course.id == e.course_id).first()
+                if course:
+                    needs_attention.append(course.title)
+                    
         result.append({
             "id": student.id,
             "name": student.name,
@@ -32,30 +37,30 @@ def get_students():
             "totalTimeSpent": total_time_spent,
             "coursesNeedingAttention": needs_attention
         })
-    return jsonify(result), 200
+    return result
 
-@mentor_bp.route('/students/<int:student_id>/dashboard', methods=['GET'])
-@jwt_required()
-@role_required('MENTOR')
-def student_dashboard(student_id):
-    mentor_id = current_user_id()
-    if not MentorStudent.query.filter_by(mentor_id=mentor_id, student_id=student_id).first():
-        return jsonify({"message": "Unauthorized to view this student"}), 403
+@router.get("/students/{student_id}/dashboard")
+def student_dashboard(student_id: int, user_id: int = Depends(current_user_id), claims: dict = Depends(require_role("MENTOR")), db: Session = Depends(get_db)):
+    if not db.query(MentorStudent).filter(MentorStudent.mentor_id == user_id, MentorStudent.student_id == student_id).first():
+        return JSONResponse(status_code=403, content={"message": "Unauthorized to view this student"})
 
-    student = User.query.get_or_404(student_id)
-    completed_lessons = LessonProgress.query.filter_by(student_id=student_id, status='COMPLETED').count()
-    total_time_result = db.session.query(func.sum(LessonProgress.time_spent_minutes)).filter_by(student_id=student_id).scalar()
+    student = db.query(User).filter(User.id == student_id).first()
+    if not student:
+        return JSONResponse(status_code=404, content={"detail": "Not Found"})
+        
+    completed_lessons = db.query(LessonProgress).filter(LessonProgress.student_id == student_id, LessonProgress.status == 'COMPLETED').count()
+    total_time_result = db.query(func.sum(LessonProgress.time_spent_minutes)).filter(LessonProgress.student_id == student_id).scalar()
     total_time_spent = int(total_time_result) if total_time_result else 0
-    enrollments = Enrollment.query.filter_by(student_id=student_id).all()
+    enrollments = db.query(Enrollment).filter(Enrollment.student_id == student_id).all()
     average_progress = sum(e.progress_percent for e in enrollments) / len(enrollments) if enrollments else 0
 
     courses_data = []
     for enrollment in enrollments:
-        course = Course.query.get(enrollment.course_id)
+        course = db.query(Course).filter(Course.id == enrollment.course_id).first()
         if not course:
             continue
-        total_lessons = Lesson.query.filter_by(course_id=course.id).count()
-        completed = LessonProgress.query.join(Lesson).filter(
+        total_lessons = db.query(Lesson).filter(Lesson.course_id == course.id).count()
+        completed = db.query(LessonProgress).join(Lesson).filter(
             LessonProgress.student_id == student_id,
             LessonProgress.lesson_id == Lesson.id,
             Lesson.course_id == course.id,
@@ -69,8 +74,8 @@ def student_dashboard(student_id):
             "totalLessons": total_lessons
         })
 
-    recent_activity = ActivityEvent.query.filter_by(student_id=student_id).order_by(ActivityEvent.created_at.desc()).limit(20).all()
-    return jsonify({
+    recent_activity = db.query(ActivityEvent).filter(ActivityEvent.student_id == student_id).order_by(ActivityEvent.created_at.desc()).limit(20).all()
+    return {
         "student": {"id": student.id, "name": student.name, "email": student.email},
         "completedLessons": completed_lessons,
         "totalTimeSpent": total_time_spent,
@@ -84,4 +89,4 @@ def student_dashboard(student_id):
             "durationMinutes": event.duration_minutes,
             "createdAt": event.created_at.isoformat()
         } for event in recent_activity]
-    }), 200
+    }

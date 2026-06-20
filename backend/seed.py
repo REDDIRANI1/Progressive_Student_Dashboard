@@ -1,7 +1,8 @@
 import random
 from datetime import datetime, timedelta
-from app import create_app, db
+from app.database import engine, Base, SessionLocal
 from app.models import User, Course, Lesson, Enrollment, LessonProgress, ActivityEvent, MentorStudent
+from app.utils import get_password_hash
 
 COURSES = [
     {"title": "Mathematics Basics", "description": "Learn arithmetic, algebra, fractions, and problem solving.", "level": "Beginner"},
@@ -9,8 +10,7 @@ COURSES = [
     {"title": "English Writing", "description": "Improve grammar, essays, structure, and persuasive writing.", "level": "Intermediate"},
 ]
 
-
-def seed_progress_for_student(student, courses, lessons, now):
+def seed_progress_for_student(student, courses, lessons, now, db):
     for course in courses:
         course_lessons = [lesson for lesson in lessons if lesson.course_id == course.id]
         completed_count = random.randint(2, 7)
@@ -31,7 +31,7 @@ def seed_progress_for_student(student, courses, lessons, now):
                 time_spent = random.randint(5, max(6, lesson.estimated_minutes - 1))
 
             if status != "NOT_STARTED":
-                db.session.add(LessonProgress(
+                db.add(LessonProgress(
                     student_id=student.id,
                     lesson_id=lesson.id,
                     status=status,
@@ -41,13 +41,13 @@ def seed_progress_for_student(student, courses, lessons, now):
                 ))
 
         progress_percent = int((completed_count / len(course_lessons)) * 100)
-        db.session.add(Enrollment(student_id=student.id, course_id=course.id, progress_percent=progress_percent))
+        db.add(Enrollment(student_id=student.id, course_id=course.id, progress_percent=progress_percent))
 
         for _ in range(random.randint(8, 14)):
             lesson = random.choice(course_lessons)
             event_date = now - timedelta(days=random.randint(0, 13), hours=random.randint(0, 23))
             minutes = random.randint(10, 50)
-            db.session.add(ActivityEvent(
+            db.add(ActivityEvent(
                 student_id=student.id,
                 course_id=course.id,
                 lesson_id=lesson.id,
@@ -58,43 +58,40 @@ def seed_progress_for_student(student, courses, lessons, now):
 
 
 def seed_data():
-    app = create_app()
-    with app.app_context():
-        print("Dropping existing tables...")
-        db.drop_all()
-        print("Creating tables...")
-        db.create_all()
+    print("Dropping existing tables...")
+    Base.metadata.drop_all(bind=engine)
+    print("Creating tables...")
+    Base.metadata.create_all(bind=engine)
 
+    db = SessionLocal()
+    try:
         print("Seeding users...")
-        mentor = User(name="Demo Mentor", email="mentor@example.com", role="MENTOR")
-        mentor.set_password("password123")
-        db.session.add(mentor)
+        mentor = User(name="Demo Mentor", email="mentor@example.com", role="MENTOR", password_hash=get_password_hash("password123"))
+        db.add(mentor)
 
         students = []
-        demo_student = User(name="Demo Student", email="student@example.com", role="STUDENT")
-        demo_student.set_password("password123")
+        demo_student = User(name="Demo Student", email="student@example.com", role="STUDENT", password_hash=get_password_hash("password123"))
         students.append(demo_student)
-        db.session.add(demo_student)
+        db.add(demo_student)
 
         for i in range(1, 5):
-            student = User(name=f"Student {i}", email=f"student{i}@example.com", role="STUDENT")
-            student.set_password("password123")
+            student = User(name=f"Student {i}", email=f"student{i}@example.com", role="STUDENT", password_hash=get_password_hash("password123"))
             students.append(student)
-            db.session.add(student)
-        db.session.commit()
+            db.add(student)
+        db.commit()
 
         print("Linking mentor to students...")
         for student in students:
-            db.session.add(MentorStudent(mentor_id=mentor.id, student_id=student.id))
-        db.session.commit()
+            db.add(MentorStudent(mentor_id=mentor.id, student_id=student.id))
+        db.commit()
 
         print("Seeding courses and lessons...")
         courses = []
         for course_data in COURSES:
             course = Course(**course_data)
-            db.session.add(course)
+            db.add(course)
             courses.append(course)
-        db.session.commit()
+        db.commit()
 
         lessons = []
         lesson_topics = ["Foundations", "Key Concepts", "Practice", "Problem Solving", "Review", "Quiz Prep", "Applied Skills", "Case Study", "Project", "Final Review"]
@@ -107,17 +104,19 @@ def seed_data():
                     order=order,
                     estimated_minutes=random.randint(15, 45)
                 )
-                db.session.add(lesson)
+                db.add(lesson)
                 lessons.append(lesson)
-        db.session.commit()
+        db.commit()
 
         print("Seeding progress and activity...")
         now = datetime.utcnow()
         for student in students:
-            seed_progress_for_student(student, courses, lessons, now)
-        db.session.commit()
+            seed_progress_for_student(student, courses, lessons, now, db)
+        db.commit()
 
         print("Seeding complete!")
+    finally:
+        db.close()
 
 if __name__ == '__main__':
     seed_data()
