@@ -22,7 +22,7 @@ export const Login = () => {
       } else {
         navigate('/dashboard');
       }
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message || 'Login failed');
     } finally {
       setLoading(false);

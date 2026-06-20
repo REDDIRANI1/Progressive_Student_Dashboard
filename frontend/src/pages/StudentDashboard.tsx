@@ -20,7 +20,7 @@ export const StudentDashboard = () => {
       try {
         const result = await fetchApi('/dashboard/student');
         setData(result);
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message);
       } finally {
         setLoading(false);
@@ -160,7 +160,7 @@ export const StudentDashboard = () => {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {data.completionDistribution.map((entry, index) => (
+                  {data.completionDistribution.map((_entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>

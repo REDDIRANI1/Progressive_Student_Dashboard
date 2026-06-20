@@ -27,15 +27,15 @@ export const CourseDetail = () => {
     loadCourse();
   }, [loadCourse]);
 
-  const markComplete = async (lessonId) => {
+  const markComplete = async (lessonId: number) => {
     setMarking(lessonId);
     try {
       await fetchApi(`/lessons/${lessonId}/complete`, {
         method: 'POST',
-        body: JSON.stringify({ timeSpentMinutes: course.lessons.find(l => l.id === lessonId).estimatedMinutes })
+        body: JSON.stringify({ timeSpentMinutes: course?.lessons?.find(l => l.id === lessonId)?.estimatedMinutes || 0 })
       });
       await loadCourse();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setMarking(null);
@@ -57,7 +57,7 @@ export const CourseDetail = () => {
           <h3 className="text-xl font-bold text-slate-800">Lessons</h3>
         </div>
         <div className="divide-y divide-slate-100">
-          {course.lessons.map((lesson) => {
+          {(course.lessons || []).map((lesson) => {
             const isCompleted = lesson.status === 'COMPLETED';
             const isInProgress = lesson.status === 'IN_PROGRESS';
             const isMarking = marking === lesson.id;

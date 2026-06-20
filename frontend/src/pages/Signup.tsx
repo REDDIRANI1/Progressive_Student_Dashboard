@@ -25,7 +25,7 @@ export const Signup = () => {
       } else {
         navigate('/dashboard');
       }
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message || 'Signup failed');
     } finally {
       setLoading(false);

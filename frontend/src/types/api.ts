@@ -24,10 +24,10 @@ export interface CourseActivity {
 export interface Course {
   id: number;
   title: string;
-  description: string;
-  progressPercent: number;
-  completedLessons: number;
-  totalLessons: number;
+  description?: string;
+  progressPercent?: number;
+  completedLessons?: number;
+  totalLessons?: number;
   lessons?: Lesson[];
   activity?: CourseActivity[];
 }
@@ -55,6 +55,7 @@ export interface StudentDashboardData {
   recommendations: Recommendation[];
   timeSeries: TimeSeriesPoint[];
   completionDistribution: CompletionDistributionPoint[];
+  lastActive?: string | null;
 }
 
 export interface MentorStudent {
@@ -76,4 +77,5 @@ export interface MentorStudentDetail {
   totalTimeSpent: number;
   averageProgress: number;
   courses: Course[];
+  activity?: CourseActivity[];
 }

@@ -23,7 +23,7 @@ export const MentorDashboard = () => {
     loadStudents();
   }, []);
 
-  const loadStudentDetail = async (studentId) => {
+  const loadStudentDetail = async (studentId: number) => {
     setDetailLoading(true);
     try {
       const result = await fetchApi(`/mentor/students/${studentId}/dashboard`);
@@ -119,7 +119,7 @@ export const MentorDashboard = () => {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
           {detailLoading ? (
             <p className="text-slate-500">Loading student details...</p>
-          ) : (
+          ) : selectedStudent ? (
             <div className="space-y-6">
               <div>
                 <h3 className="text-xl font-bold text-slate-800">{selectedStudent.student.name} Details</h3>
@@ -139,7 +139,7 @@ export const MentorDashboard = () => {
                 ))}
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       )}
     </div>
