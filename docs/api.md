@@ -8,7 +8,9 @@ Protected routes require a `Bearer <token>` in the Authorization header.
 
 ### `POST /auth/signup`
 Creates a new user.
-- **Body**: `{ "name": "John", "email": "john@example.com", "password": "pass", "role": "STUDENT" }`
+- **Validation**: Passwords must be at least 8 characters long (returns `400 Bad Request` otherwise).
+- **Side Effects**: Automatically enrolls newly created `STUDENT` accounts in all available courses with 0% progress.
+- **Body**: `{ "name": "John", "email": "john@example.com", "password": "password123", "role": "STUDENT" }`
 - **Response**: `201 Created`
 
 ### `POST /auth/login`

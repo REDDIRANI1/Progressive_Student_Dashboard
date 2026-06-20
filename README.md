@@ -9,8 +9,8 @@ A comprehensive web application that tracks student progress across multiple cou
 - **Database**: SQLite (default local demo) or PostgreSQL (for production)
 
 ## 3. Features
-- **Authentication**: JWT-based email/password login with Student and Mentor roles.
-- **Student Dashboard**: Shows completed lessons, total time spent, average progress, active courses, trend chart (time series), donut chart (completion distribution), and recommendations.
+- **Authentication**: JWT-based email/password login with Student and Mentor roles. Passwords must be at least 8 characters long.
+- **Student Dashboard**: Shows completed lessons, total time spent, average progress, active courses, trend chart (time series), donut chart (completion distribution), and recommendations. New students are automatically enrolled in all available courses upon registration.
 - **Course & Lesson Progress**: View lessons, mark them as complete, track estimated time spent, and automatically calculate course progress.
 - **Mentor Dashboard**: Mentors can view all assigned students, monitor their overall progress, total time spent, see courses needing attention, and click into student details.
 - **CSV Export**: Export progress data as `progress.csv`.
