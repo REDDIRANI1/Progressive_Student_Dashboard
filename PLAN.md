@@ -32,9 +32,9 @@ Use a stack that is fast to build and easy to demo.
 
 ### Backend
 
-- Python Flask REST API
-- Flask-CORS for frontend/backend communication
-- Flask-JWT-Extended for authentication
+- Python FastAPI REST API
+- FastAPI CORS middleware for frontend/backend communication
+- python-jose for JWT authentication
 - Werkzeug or bcrypt for password hashing
 
 ### Database
@@ -45,7 +45,7 @@ Use a stack that is fast to build and easy to demo.
 ### ORM
 
 - SQLAlchemy
-- Flask-Migrate/Alembic for migrations
+- Alembic for migrations (or Base.metadata.create_all for MVP)
 
 ### Authentication
 
@@ -247,7 +247,7 @@ POST /api/auth/login
 GET  /api/auth/me
 ```
 
-For Flask, implement these as REST endpoints. Return a JWT access token after login and use role-based checks for protected routes.
+For FastAPI, implement these as REST endpoints. Return a JWT access token after login and use role-based checks for protected routes.
 
 ---
 
@@ -419,9 +419,9 @@ password: password123
 ### Phase 1 — Project Setup
 
 - Create React + Vite frontend
-- Create Python Flask backend
+- Create Python FastAPI backend
 - Add Tailwind CSS
-- Add SQLAlchemy + Flask-Migrate
+- Add SQLAlchemy
 - Setup database
 - Create SQLAlchemy models
 - Add seed script
@@ -445,7 +445,7 @@ password: password123
 - Add trend chart using time-series API
 - Add donut chart using completion distribution data
 - Add basic recommended next steps
-- Connect to Flask API
+- Connect to FastAPI backend
 
 ---
 
