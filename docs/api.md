@@ -43,6 +43,20 @@ Gets the student dashboard stats, charts data, and recommendations.
 
 ---
 
+## Analytics
+
+### `GET /analytics/summary`
+Returns student aggregate metrics.
+- **Headers**: `Authorization: Bearer <token>` (Role: STUDENT)
+- **Response**: `200 OK` `{ "completedLessons": 12, "totalTimeSpent": 300, "averageProgress": 50, "activeCourses": 3 }`
+
+### `GET /analytics/time-series`
+Returns daily learning minutes for the last 14 days.
+- **Headers**: `Authorization: Bearer <token>` (Role: STUDENT)
+- **Response**: `200 OK` `[{ "date": "2026-06-20", "minutes": 45 }]`
+
+---
+
 ## Courses & Lessons
 
 ### `GET /courses`
@@ -51,7 +65,7 @@ Lists all courses.
 - **Response**: `200 OK` `[{ "id": 1, "title": "Math", ... }]`
 
 ### `GET /courses/:id`
-Gets course details and its lessons with progress status.
+Gets course details, lessons with progress status, and recent course activity history.
 - **Headers**: `Authorization: Bearer <token>`
 - **Response**: `200 OK` `{ "id": 1, "title": "Math", "lessons": [...] }`
 
@@ -88,6 +102,15 @@ Manually logs an activity event.
 
 ---
 
+## Export
+
+### `GET /export/progress.csv`
+Downloads progress as CSV.
+- **Headers**: `Authorization: Bearer <token>`
+- **Response**: `200 OK` CSV with `Student name, Course, Completed lessons, Total lessons, Time spent, Progress percentage`
+
+---
+
 ## Mentor
 
 ### `GET /mentor/students`
@@ -96,6 +119,6 @@ Gets all students assigned to the mentor and their aggregate progress.
 - **Response**: `200 OK` `[{ "id": 2, "name": "Demo Student", "overallProgress": 60, "totalTimeSpent": 500, "coursesNeedingAttention": [...] }]`
 
 ### `GET /mentor/students/:studentId/dashboard`
-Gets a specific student's dashboard stats.
+Gets a specific student's dashboard stats, course progress, and recent activity for mentor drill-down views.
 - **Headers**: `Authorization: Bearer <token>` (Role: MENTOR)
 - **Response**: `200 OK` `{ "completedLessons": 18, ... }`

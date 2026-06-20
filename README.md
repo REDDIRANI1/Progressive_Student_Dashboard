@@ -12,7 +12,8 @@ A comprehensive web application that tracks student progress across multiple cou
 - **Authentication**: JWT-based email/password login with Student and Mentor roles.
 - **Student Dashboard**: Shows completed lessons, total time spent, average progress, active courses, trend chart (time series), donut chart (completion distribution), and recommendations.
 - **Course & Lesson Progress**: View lessons, mark them as complete, track estimated time spent, and automatically calculate course progress.
-- **Mentor Dashboard**: Mentors can view all assigned students, monitor their overall progress, total time spent, and see which courses need attention.
+- **Mentor Dashboard**: Mentors can view all assigned students, monitor their overall progress, total time spent, see courses needing attention, and click into student details.
+- **CSV Export**: Export progress data as `progress.csv`.
 
 ## 4. Setup Instructions
 
@@ -58,14 +59,14 @@ A comprehensive web application that tracks student progress across multiple cou
    ```
 
 ## 5. Environment Variables
-Check the `.env.example` in the root and `backend/.env`.
+Check `.env.example` in the root and `backend/.env.example`.
 
 **Backend (`backend/.env`)**:
 ```env
 FLASK_APP=run.py
 FLASK_ENV=development
-SECRET_KEY=super-secret-key-for-dev
-JWT_SECRET_KEY=super-secret-jwt-key-for-dev
+SECRET_KEY=super-secret-key-for-dev-please-change-32chars
+JWT_SECRET_KEY=super-secret-jwt-key-for-dev-please-change-32chars
 DATABASE_URL=sqlite:///app.db
 ```
 
@@ -91,7 +92,6 @@ python3 seed.py
 [View API Documentation](docs/api.md)
 
 ## 10. Screenshots
-*Placeholders for screenshots*
 - [Student Dashboard](docs/screenshots/student_dashboard.png)
 - [Course Details](docs/screenshots/course_details.png)
 - [Mentor Dashboard](docs/screenshots/mentor_dashboard.png)

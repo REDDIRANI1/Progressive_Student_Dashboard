@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
 from app import db
 from app.models import User
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required
+from app.utils import current_user_id
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
@@ -35,14 +36,16 @@ def login():
     if not user or not user.check_password(data['password']):
         return jsonify({"message": "Invalid credentials"}), 401
         
-    access_token = create_access_token(identity={"id": user.id, "role": user.role, "name": user.name})
+    access_token = create_access_token(
+        identity=str(user.id),
+        additional_claims={"role": user.role, "name": user.name}
+    )
     return jsonify({"access_token": access_token, "user": {"id": user.id, "email": user.email, "role": user.role, "name": user.name}}), 200
 
 @auth_bp.route('/me', methods=['GET'])
 @jwt_required()
 def me():
-    identity = get_jwt_identity()
-    user = User.query.get(identity['id'])
+    user = User.query.get(current_user_id())
     if not user:
         return jsonify({"message": "User not found"}), 404
         

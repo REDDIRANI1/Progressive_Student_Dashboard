@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useState, useEffect, useCallback } from 'react';
 import { fetchApi } from '../lib/api';
 import { useParams } from 'react-router-dom';
 import { CheckCircle2, Circle, PlayCircle } from 'lucide-react';
@@ -10,11 +11,7 @@ export const CourseDetail = () => {
   const [loading, setLoading] = useState(true);
   const [marking, setMarking] = useState(null);
 
-  useEffect(() => {
-    loadCourse();
-  }, [id]);
-
-  const loadCourse = async () => {
+  const loadCourse = useCallback(async () => {
     try {
       const result = await fetchApi(`/courses/${id}`);
       setCourse(result);
@@ -23,7 +20,11 @@ export const CourseDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    loadCourse();
+  }, [loadCourse]);
 
   const markComplete = async (lessonId) => {
     setMarking(lessonId);
@@ -103,6 +104,24 @@ export const CourseDetail = () => {
               </div>
             );
           })}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+        <h3 className="text-xl font-bold text-slate-800 mb-4">Activity History</h3>
+        <div className="space-y-3">
+          {(course.activity || []).map((event) => (
+            <div key={event.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
+              <div>
+                <p className="font-medium text-slate-700">{event.type.replaceAll('_', ' ')}</p>
+                <p className="text-xs text-slate-500">{new Date(event.createdAt).toLocaleString()}</p>
+              </div>
+              <span className="text-sm font-semibold text-slate-600">{event.durationMinutes} min</span>
+            </div>
+          ))}
+          {(!course.activity || course.activity.length === 0) && (
+            <p className="text-sm text-slate-500">No activity recorded for this course yet.</p>
+          )}
         </div>
       </div>
     </div>

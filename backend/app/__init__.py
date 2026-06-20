@@ -18,8 +18,8 @@ def create_app():
     app = Flask(__name__)
     
     # Configure app
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default-secret-key')
-    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'default-jwt-secret-key')
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default-secret-key-change-me-32chars')
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'default-jwt-secret-key-change-me-32chars')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///app.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
@@ -40,6 +40,7 @@ def create_app():
     from app.routes.lessons import lessons_bp
     from app.routes.activity import activity_bp
     from app.routes.mentor import mentor_bp
+    from app.routes.export import export_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
@@ -48,6 +49,7 @@ def create_app():
     app.register_blueprint(lessons_bp)
     app.register_blueprint(activity_bp)
     app.register_blueprint(mentor_bp)
+    app.register_blueprint(export_bp)
     
     @app.route('/api/health', methods=['GET'])
     def health_check():

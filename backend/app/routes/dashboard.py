@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 from sqlalchemy import func
 from app import db
 from app.models import Enrollment, LessonProgress, Course, Lesson, ActivityEvent
-from app.utils import role_required
+from app.utils import current_user_id, role_required
 from datetime import datetime, timedelta
 
 dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/api/dashboard')
@@ -12,8 +12,7 @@ dashboard_bp = Blueprint('dashboard', __name__, url_prefix='/api/dashboard')
 @jwt_required()
 @role_required('STUDENT')
 def student_dashboard():
-    identity = get_jwt_identity()
-    student_id = identity['id']
+    student_id = current_user_id()
 
     # 1. Completed Lessons
     completed_lessons = LessonProgress.query.filter_by(
@@ -62,7 +61,6 @@ def student_dashboard():
         end = start + timedelta(days=1)
         minutes = db.session.query(func.sum(ActivityEvent.duration_minutes)).filter(
             ActivityEvent.student_id == student_id,
-            ActivityEvent.type == 'TIME_SPENT',
             ActivityEvent.created_at >= start,
             ActivityEvent.created_at < end
         ).scalar()
@@ -98,6 +96,20 @@ def student_dashboard():
         recommendations.append({
             "title": f"Finish {lesson.title}",
             "reason": "This lesson is already in progress."
+        })
+
+    last_activity = ActivityEvent.query.filter_by(student_id=student_id).order_by(ActivityEvent.created_at.desc()).first()
+    if not last_activity or last_activity.created_at < now - timedelta(days=3):
+        recommendations.append({
+            "title": "Resume your learning streak",
+            "reason": "You have not studied in the last 3 days."
+        })
+
+    week_minutes = sum(point["minutes"] for point in time_series)
+    if week_minutes < 90:
+        recommendations.append({
+            "title": "Try a short lesson this week",
+            "reason": "Your study time is low this week."
         })
 
     if not recommendations:
